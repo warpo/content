@@ -95,7 +95,7 @@ create-instances:
   script:
     - !reference [.download-demisto-conf]
     - !reference [.create-release-notes-and-common-docs]
-    - neo4j-admin --version
+
     - section_start "Create content graph" --collapsed
     - neo4j-admin --version
     - demisto-sdk create-content-graph -o $ARTIFACTS_FOLDER/content-graph.dump
