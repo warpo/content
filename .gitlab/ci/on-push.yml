@@ -127,9 +127,8 @@ create-instances:
     - section_end "Prepare Content Packs for Testing"
 
     - section_start "Create Instances"
-    - |
-      [ -n "${TIME_TO_LIVE}" ] && TTL=${TIME_TO_LIVE} || TTL=300
-      python3 ./Tests/scripts/awsinstancetool/aws_instance_tool.py -envType "$IFRA_ENV_TYPE" -timetolive $TTL -outfile "$ARTIFACTS_FOLDER/env_results.json"
+    - python3 -m pip install google-cloud-compute
+    - python3 ./gcp/create_instance.py --env-type "$IFRA_ENV_TYPE" --outfile "$ARTIFACTS_FOLDER/env_results.json" --creds $CONTENET_BUILD_GCP
     - section_end "Create Instances"
 
     - section_start "Upload Artifacts to GCP" --collapsed
@@ -277,7 +276,7 @@ prepare-testing-bucket-xpanse:
         echo "Instance with role $INSTANCE_ROLE was not created"
         exit 0
       fi
-    - !reference [.open-ssh-tunnel]
+    - !reference [.ssh-config-setup]
     - python3 ./Tests/scripts/wait_until_server_ready.py "$INSTANCE_ROLE"
     - |
       # workaround for the hard-coded value in the sdk
@@ -307,7 +306,7 @@ prepare-testing-bucket-xpanse:
       if [ -z "${TIME_TO_LIVE}" -a "$CI_PIPELINE_SOURCE" = "contrib" ]; then
         TIME_TO_LIVE=300
       fi
-      python3 ./Tests/scripts/destroy_instances.py $ARTIFACTS_FOLDER $ARTIFACTS_FOLDER/env_results.json "$INSTANCE_ROLE" "$TIME_TO_LIVE" || EXIT_CODE=$?
+      python3 ./Tests/scripts/destroy_instances.py --aritfacts-dir $ARTIFACTS_FOLDER --env-file $ARTIFACTS_FOLDER/env_results.json --instance-role "$INSTANCE_ROLE" || EXIT_CODE=$?
     - exit $EXIT_CODE
 
 

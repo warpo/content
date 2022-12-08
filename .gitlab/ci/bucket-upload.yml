@@ -105,9 +105,9 @@ prepare-testing-bucket-xpanse-upload-flow:
     - '[[ "create instances done" = $(cat "$ARTIFACTS_FOLDER/create_instances_done.txt" 2> /dev/null) ]] || (echo "this is a known issue with GitLab pipline please mention @esharf in your PR" && exit 1)'
     - EXIT_CODE=0
     - section_start "Download configuration"
-    - ./Tests/scripts/download_demisto_conf.sh  >> $ARTIFACTS_FOLDER/logs/installations.log
+    - ./Tests/scripts/download_conf_repos.sh  >> $ARTIFACTS_FOLDER/logs/download_conf_repos.log
     - section_end "Download configuration"
-    - !reference [.open-ssh-tunnel]
+    - !reference [.ssh-config-setup]
     - section_start "Get Instance Variables"
     - echo INSTANCE_ROLE="$INSTANCE_ROLE"
     - echo INSTANCE_CREATED="$INSTANCE_CREATED"
@@ -119,7 +119,7 @@ prepare-testing-bucket-xpanse-upload-flow:
     - ./Tests/Marketplace/install_packs.sh "$INSTANCE_ROLE" || EXIT_CODE=$?
     - section_end "Install Packs"
     - section_start "Destroy instances"
-    - python3 ./Tests/scripts/destroy_instances.py $ARTIFACTS_FOLDER $ARTIFACTS_FOLDER/env_results.json "$INSTANCE_ROLE" "$TIME_TO_LIVE" || EXIT_CODE=$?
+    - python3 ./Tests/scripts/destroy_instances.py --aritfacts-dir $ARTIFACTS_FOLDER --env-file $ARTIFACTS_FOLDER/env_results.json --instance-role "$INSTANCE_ROLE" || EXIT_CODE=$?
     - section_end "Destroy instances"
     - exit "$EXIT_CODE"
 
@@ -168,7 +168,7 @@ install-packs-in-server-master:
     - '[[ "create instances done" = $(cat "$ARTIFACTS_FOLDER/create_instances_done.txt" 2> /dev/null) ]] || (echo "this is a known issue with GitLab pipline please mention @esharf in your PR" && exit 1)'
     - EXIT_CODE=0
     - section_start "Download configuration"
-    - ./Tests/scripts/download_demisto_conf.sh  >> $ARTIFACTS_FOLDER/logs/installations.log
+    - ./Tests/scripts/download_conf_repos.sh  >> $ARTIFACTS_FOLDER/logs/download_conf_repos.log
     - section_end "Download configuration"
 
     - section_start "Lock XSIAM Machine"
@@ -237,7 +237,7 @@ upload-packs-to-marketplace:
     - .bucket-upload-rule
     - .default-job-settings
   script:
-    - !reference [.open-ssh-tunnel]
+    - !reference [.ssh-config-setup]
     - *check_user_permissions_to_upload_packs
     - section_start "Upload Packs To Marketplace Storage"
     - |
