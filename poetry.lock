@@ -527,7 +527,7 @@ build = ["gsutil (==5.14)"]
 type = "git"
 url = "https://github.com/demisto/demisto-sdk.git"
 reference = "eli/migrate_to_gcp"
-resolved_reference = "a2a50505c79ed8aafdb6ae66b69e38c30fcaa1fb"
+resolved_reference = "e90c8acde907a2f8656338d63cf7faef74de3888"
 
 [[package]]
 name = "Deprecated"
